@@ -24,6 +24,40 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    void Update()
+    {
+        // Rotation de la caméra
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        rotationX -= mouseY;
+        rotationX = Mathf.Clamp(rotationX, -90, 90);
+
+        playerCamera.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
+        transform.Rotate(Vector3.up * mouseX);
+
+        // Déplacement du joueur
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+
+        Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        characterController.Move(move * movementSpeed * Time.deltaTime);
+
+        // Saut
+        if (Input.GetButtonDown("Jump") && characterController.isGrounded)
+        {
+            moveDirection.y = jumpForce;
+        }
+
+        // Application de la gravité
+        moveDirection.y -= gravity * Time.deltaTime;
+        characterController.Move(moveDirection * Time.deltaTime);
+        // Saut
+        if (Input.GetButtonDown("Jump") && characterController.isGrounded)
+        {
+            moveDirection.y = jumpForce;
+        }
+    }
     
 }
 
